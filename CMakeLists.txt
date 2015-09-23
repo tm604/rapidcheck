@@ -54,7 +54,7 @@ else()
     APPEND_STRING PROPERTY COMPILE_FLAGS " -O3")
 endif()
 
-target_include_directories(rapidcheck PUBLIC include)
+include_directories(include)
 
 add_subdirectory(ext)
 

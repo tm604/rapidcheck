@@ -1,7 +1,7 @@
-if (RC_ENABLE_TESTS OR RC_ENABLE_CATCH)
-  add_library(catch INTERFACE)
-  target_include_directories(catch INTERFACE catch/include)
-endif()
+#if (RC_ENABLE_TESTS OR RC_ENABLE_CATCH)
+#  add_library(catch)
+#  target_include_directories(catch INTERFACE catch/include)
+#endif()
 
 if (RC_ENABLE_GMOCK AND RC_ENABLE_TESTS)
   if (NOT EXISTS "${CMAKE_CURRENT_LIST_DIR}/gmock/CMakeLists.txt")

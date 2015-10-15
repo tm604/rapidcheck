@@ -1,5 +1,11 @@
 cmake_minimum_required(VERSION 2.8.7)
 project(rapidcheck)
+set (VERSION_MAJOR 0)
+set (VERSION_MINOR 0)
+set (VERSION_PATCH 1)
+set (PROJECT_VERSION "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}")
+
+set (PROJECT_VERSION_REVISION 1)
 enable_testing()
 
 option(RC_ENABLE_TESTS "Build RapidCheck tests" OFF)
@@ -54,7 +60,15 @@ else()
     APPEND_STRING PROPERTY COMPILE_FLAGS " -O3")
 endif()
 
-include_directories(include)
+target_include_directories(rapidcheck PUBLIC include)
+install(
+	DIRECTORY include/
+	DESTINATION "include"
+)
+install(
+	TARGETS rapidcheck
+	ARCHIVE DESTINATION lib
+)
 
 add_subdirectory(ext)
 
@@ -67,3 +81,28 @@ if (RC_ENABLE_EXAMPLES)
 endif()
 
 add_subdirectory(extras)
+
+include (InstallRequiredSystemLibraries)
+set (CPACK_PACKAGE_NAME "librapidcheck")
+set (CPACK_PACKAGE_VENDOR "")
+set (CPACK_PACKAGE_VERSION_MAJOR "${VERSION_MAJOR}")
+set (CPACK_PACKAGE_VERSION_MINOR "${VERSION_MINOR}")
+set (CPACK_PACKAGE_VERSION_PATCH "${VERSION_PATCH}")
+set (CPACK_PACKAGE_CONTACT "Tom Molesworth <tom@perlsite.co.uk>")
+set (CPACK_PACKAGE_DESCRIPTION_SUMMARY "C++ quickcheck-style test framework")
+set (CPACK_PACKAGE_DESCRIPTION_FILE "${CMAKE_CURRENT_SOURCE_DIR}/README.debian")
+set (CPACK_GENERATOR "TGZ;DEB")
+string(TOLOWER "${CPACK_PACKAGE_NAME}" CPACK_PACKAGE_NAME_LOWERCASE)
+find_program(DPKG_PROGRAM dpkg)
+if(DPKG_PROGRAM)
+	execute_process(
+		COMMAND ${DPKG_PROGRAM} --print-architecture
+		OUTPUT_VARIABLE CPACK_DEBIAN_PACKAGE_ARCHITECTURE
+		OUTPUT_STRIP_TRAILING_WHITESPACE
+		)
+	set(CPACK_PACKAGE_FILE_NAME "${CPACK_PACKAGE_NAME_LOWERCASE}_${PROJECT_VERSION}-${PROJECT_VERSION_REVISION}_${CPACK_DEBIAN_PACKAGE_ARCHITECTURE}")   
+else(DPKG_PROGRAM)
+	set(CPACK_PACKAGE_FILE_NAME "${CPACK_PACKAGE_NAME_LOWERCASE}_${PROJECT_VERSION}-${PROJECT_VERSION_REVISION}_${CMAKE_SYSTEM_NAME}")
+endif(DPKG_PROGRAM)
+# set (CPACK_DEBIAN_PACKAGE_SHLIBDEPS "ON")
+include (CPack)
